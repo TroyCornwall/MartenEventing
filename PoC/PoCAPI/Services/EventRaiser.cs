@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using RestSharp;
 
 namespace PoCAPI.Services
@@ -6,16 +7,15 @@ namespace PoCAPI.Services
     public class EventRaiser
     {
 
-        // private readonly EventRaiserOptions _options;
-        //TODO: Use options to set event raiser url
-        // public EventRaiser(EventRaiserOptions options)
-        // {
-        //     
-        // }
+        private readonly EventRaiserOptions _options;
+        public EventRaiser(IOptionsMonitor<EventRaiserOptions> options)
+        {
+            _options = options.CurrentValue;
+        }
         
         public async Task<long> AddMessage(string message)
         {
-            var client = new RestClient("https://localhost:44366/message");
+            var client = new RestClient($"{_options.EventRaiserUrl}/message");
             client.Timeout = -1;
             var request = new RestRequest(Method.POST);
             request.AddHeader("Content-Type", "application/json");
@@ -32,7 +32,7 @@ namespace PoCAPI.Services
 
         public async Task<long> AddHeartBeat()
         {
-            var client = new RestClient("https://localhost:44366/heartbeat");
+            var client = new RestClient($"{_options.EventRaiserUrl}//heartbeat");
             client.Timeout = -1;
             var request = new RestRequest(Method.GET);
             IRestResponse response = await client.ExecuteAsync(request);

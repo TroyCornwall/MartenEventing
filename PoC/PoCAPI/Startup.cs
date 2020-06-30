@@ -29,8 +29,9 @@ namespace PoCAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.Configure<EventRaiserOptions>(Configuration);
             services.AddTransient<EventRaiser>();
-            services.AddOptions<EventRaiserOptions>();
+           
             
             
             
