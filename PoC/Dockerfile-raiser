@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+WORKDIR /src
+
+COPY ["Common.Commands", "Common.Commands"]
+COPY ["PoC", "PoC/"]
+
+
+WORKDIR "/src/PoC/PoCEventRaiser"
+
+RUN dotnet restore "PoCEventRaiser.csproj" 
+RUN dotnet build "PoCEventRaiser.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "PoCEventRaiser.csproj" -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
+
+WORKDIR /app
+COPY --from=publish /app/publish .
+
+EXPOSE 80
+EXPOSE 443
+
+ENTRYPOINT ["dotnet", "PoCEventRaiser.dll"]

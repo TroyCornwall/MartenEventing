@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_PASSWORD: eventingexample
+  poc_event_handler:
+    build:
+      context: ./
+      dockerfile: PoC/Dockerfile-handler
+    environment: 
+      ConnectionStrings__Marten: Host=postgres;Port=5432;Database=postgres;Username=postgres;password=eventingexample
+    depends_on: 
+      - postgres
+  poc_event_raiser:
+    build:
+      context: ./
+      dockerfile: PoC/Dockerfile-raiser
+    environment: 
+      ConnectionStrings__Marten: Host=postgres;Port=5432;Database=postgres;Username=postgres;password=eventingexample
+    depends_on:
+      - postgres
+  poc_api:
+    build:
+      context: ./
+      dockerfile: PoC/Dockerfile-api
+    environment: 
+      EventRaiserUrl: http://poc_event_raiser
+    ports:
+      - 8081:80
+    depends_on:
+      - poc_event_raiser

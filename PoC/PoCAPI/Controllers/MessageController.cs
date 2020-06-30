@@ -38,7 +38,7 @@ namespace PoCAPI.Controllers
 
             var startTime = DateTime.Now;
             _logger.LogInformation($"Got message {message}");
-            var highestEventId = _eventRaiser.AddMessage(message);
+            var highestEventId = await _eventRaiser.AddMessage(message);
            
             //TODO: Wait until event id is written back into DB
 
