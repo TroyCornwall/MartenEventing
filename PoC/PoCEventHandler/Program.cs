@@ -2,6 +2,7 @@
 using Common.Commands.Events;
 using Common.Commands.Events.PoC;
 using Microsoft.Extensions.DependencyInjection;
+using PoCCommon.Services;
 using PoCEventHandler.Services;
 using Serilog;
 
@@ -13,12 +14,12 @@ namespace PoCEventHandler
         {
             var serviceProvider = Startup.ConfigureServices(new ServiceCollection(), args);
             var eventHandler = serviceProvider.GetService<EventHandler>();
+            var watermarkService = serviceProvider.GetService<WatermarkService>();
             
-            long currentPosition = 0;
-
             while (true)
             {
-                var events = eventHandler.GetEvents(1+currentPosition);
+                var watermark = watermarkService.GetCurrentWatermark();
+                var events = eventHandler.GetEvents(1+watermark.LastSequenceId);
                 if (events.Count > 0)
                 {
                     foreach (var eventStoreEvent in events)
@@ -30,17 +31,14 @@ namespace PoCEventHandler
                             case "Common.Commands.Events.Heartbeat":
                                 var obj = eventStoreEvent.Data as Heartbeat;
                                 Log.Logger.Debug($"{eventStoreEvent.Sequence} - Heartbeat - {obj?.Source} from {obj?.CreatedBy}");
-                                currentPosition = eventStoreEvent.Sequence;
                                 break;
                             case "Common.Commands.Events.PoC.PocCharEvent":
                                 var charEvent = eventStoreEvent.Data as PocCharEvent;
                                 Log.Logger.Information($"{eventStoreEvent.Sequence} - Message - {charEvent?.Character}");
-                                currentPosition = eventStoreEvent.Sequence;
-                                break;
-                            default:
-                                currentPosition = eventStoreEvent.Sequence;
                                 break;
                         }
+                        watermark.LastSequenceId = eventStoreEvent.Sequence;
+                        watermarkService.UpdateWatermark(watermark);
                     }
                 }
             }

@@ -1,7 +1,10 @@
 ﻿using System.IO;
 using Marten;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PoCCommon.Database;
+using PoCCommon.Services;
 using PoCEventHandler.Services;
 using Serilog;
 using Serilog.Events;
@@ -12,11 +15,15 @@ namespace PoCEventHandler
     {
         public static ServiceProvider ConfigureServices(IServiceCollection services, string[] args)
         {
-            var options = ConfigureOptions(services, args);
+            var configuration = ConfigureOptions(services, args);
             ConfigureLogging();
-            services.AddMarten(options.GetConnectionString("Marten"));
-
+            services.AddMarten(configuration.GetConnectionString("Marten"));
+            
+            services.AddDbContext<PocDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("SqlDB")));
+            
             services.AddTransient<EventHandler>();
+            services.AddTransient<WatermarkService>();
             
             return services.BuildServiceProvider();
         }
@@ -34,8 +41,6 @@ namespace PoCEventHandler
                 .AddCommandLine(args);
 
             var config = configBuilder.Build();
-            //Bind to object, add to DI
-            services.Configure<MyOptions>(config);
             return config;
         }
 

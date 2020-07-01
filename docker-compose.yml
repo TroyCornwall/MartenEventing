@@ -5,21 +5,31 @@ services:
     ports:
       - 5433:5432
     environment:
-      POSTGRES_PASSWORD: eventingexample
+      POSTGRES_PASSWORD: EventingExample1!
+  sql:
+    image: mcr.microsoft.com/mssql/server:2019-CU5-ubuntu-16.04
+    ports: 
+      - 1337:1433
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: EventingExample1!
   poc_event_handler:
     build:
       context: ./
       dockerfile: PoC/Dockerfile-handler
     environment: 
-      ConnectionStrings__Marten: Host=postgres;Port=5432;Database=postgres;Username=postgres;password=eventingexample
+      ConnectionStrings__Marten: Host=postgres;Port=5432;Database=postgres;Username=postgres;password=EventingExample1!
+      ConnectionStrings__SqlDB: Server=sql;Database=pocdb;User Id=sa;Password=EventingExample1!;
     depends_on: 
       - postgres
+      - sql
+      - poc_dbdeploy
   poc_event_raiser:
     build:
       context: ./
       dockerfile: PoC/Dockerfile-raiser
     environment: 
-      ConnectionStrings__Marten: Host=postgres;Port=5432;Database=postgres;Username=postgres;password=eventingexample
+      ConnectionStrings__Marten: Host=postgres;Port=5432;Database=postgres;Username=postgres;password=EventingExample1!
     depends_on:
       - postgres
   poc_api:
@@ -28,7 +38,17 @@ services:
       dockerfile: PoC/Dockerfile-api
     environment: 
       EventRaiserUrl: http://poc_event_raiser
+      ConnectionStrings__SqlDB: Server=sql;Database=pocdb;User Id=sa;Password=EventingExample1!;
     ports:
       - 8081:80
     depends_on:
       - poc_event_raiser
+      - sql
+  poc_dbdeploy:
+    build:
+      context: ./
+      dockerfile: PoC/Dockerfile-db
+    environment: 
+      ConnectionStrings__SqlDB: Server=sql;Database=pocdb;User Id=sa;Password=EventingExample1!;
+    depends_on:
+      - sql    

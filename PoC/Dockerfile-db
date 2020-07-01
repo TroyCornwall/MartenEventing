@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster
+WORKDIR /src
+
+COPY ["Common.Commands", "Common.Commands"]
+COPY ["PoC", "PoC/"]
+
+WORKDIR "/src/PoC/PoCAPI"
+RUN dotnet restore
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+ENTRYPOINT ["dotnet", "ef", "database",  "update"]
