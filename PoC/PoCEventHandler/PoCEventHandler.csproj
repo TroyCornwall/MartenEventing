@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Common.Commands\Common.Commands.csproj" />
+      <ProjectReference Include="..\PoCCommon\PoCCommon.csproj" />
     </ItemGroup>
 
     <ItemGroup>

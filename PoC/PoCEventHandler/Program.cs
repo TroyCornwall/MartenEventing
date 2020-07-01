@@ -13,8 +13,8 @@ namespace PoCEventHandler
         {
             var serviceProvider = Startup.ConfigureServices(new ServiceCollection(), args);
             var eventHandler = serviceProvider.GetService<EventHandler>();
-            
-            long currentPosition = 0;
+            var watermarkService = serviceProvider.GetService<WatermarkService>();
+            long currentPosition = watermarkService.GetCurrentWatermark();
 
             while (true)
             {
@@ -30,17 +30,14 @@ namespace PoCEventHandler
                             case "Common.Commands.Events.Heartbeat":
                                 var obj = eventStoreEvent.Data as Heartbeat;
                                 Log.Logger.Debug($"{eventStoreEvent.Sequence} - Heartbeat - {obj?.Source} from {obj?.CreatedBy}");
-                                currentPosition = eventStoreEvent.Sequence;
                                 break;
                             case "Common.Commands.Events.PoC.PocCharEvent":
                                 var charEvent = eventStoreEvent.Data as PocCharEvent;
                                 Log.Logger.Information($"{eventStoreEvent.Sequence} - Message - {charEvent?.Character}");
-                                currentPosition = eventStoreEvent.Sequence;
-                                break;
-                            default:
-                                currentPosition = eventStoreEvent.Sequence;
                                 break;
                         }
+                        currentPosition = eventStoreEvent.Sequence;
+                        watermarkService.UpdateWatermark(currentPosition);
                     }
                 }
             }
