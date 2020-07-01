@@ -1,0 +1,8 @@
+ apiVersion: v1
+ kind: ConfigMap
+ metadata:
+   name: poc-config-#{Environment}#
+ data:
+   ConnectionStrings__Marten: #{POSTGRES_CONNECTION_STRING}#
+   ConnectionStrings__SqlDB: #{SQL_CONNECTION_STRING}#
+   EventRaiserUrl: #{EVENT_RAISER_URL}#
