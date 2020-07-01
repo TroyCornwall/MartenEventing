@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Common.Commands.Events;
 using Common.Commands.Events.PoC;
 using Marten;
@@ -30,22 +31,17 @@ namespace PoCEventRaiser.Controllers
                 Source = "API Request",
                 CreatedBy = "PoCEventRaiser"
             };
-
+            EventStream es;
             using (var session = _store.OpenSession())
             {
-
-                // Start a brand new stream and commit the new events as
-                // part of a transaction
-                // no stream type will be stored in database
-                session.Events.StartStream(typeof(PocEvent), heartBeat);
+                es = session.Events.StartStream(typeof(PocEvent), heartBeat);
                 await session.SaveChangesAsync();
-            } 
+            }
             
             
-            // _session.Store(heartBeat);
-            // await _session.SaveChangesAsync();
-            
-            return Ok(heartBeat);
+            var seq = es.Events.Last().Sequence;
+            _logger.LogInformation($"Heartbeat id - {seq}");
+            return Ok(seq);
         }
     }
 }
