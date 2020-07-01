@@ -13,9 +13,11 @@ PoCEventHandler handles these, which it logs out the sequence Id and the Charact
 PoCEventHandler always returns highest sequence id of the events its written for the message endpoint
 
 TODO: 
-* Add a database to PoCEventHandler to mark where the application is up to. 
 * Connect PoCAPI to the database
 * PoCAPI - only return on the message endpoint when PoCEventHandler has processed its sequence id.
 * PoCEventRaiser return sequence id to heartbeat
 * Add checking the PoCEventHandler has processed the heartbeat
 * Add another API, Raiser, Handler to show you can have multiple readers and writers
+* Tests
+* Azure build
+* Deploy to k8s

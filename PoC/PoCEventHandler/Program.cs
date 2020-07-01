@@ -14,11 +14,11 @@ namespace PoCEventHandler
             var serviceProvider = Startup.ConfigureServices(new ServiceCollection(), args);
             var eventHandler = serviceProvider.GetService<EventHandler>();
             var watermarkService = serviceProvider.GetService<WatermarkService>();
-            long currentPosition = watermarkService.GetCurrentWatermark();
-
+            
             while (true)
             {
-                var events = eventHandler.GetEvents(1+currentPosition);
+                var watermark = watermarkService.GetCurrentWatermark();
+                var events = eventHandler.GetEvents(1+watermark.LastSequenceId);
                 if (events.Count > 0)
                 {
                     foreach (var eventStoreEvent in events)
@@ -36,8 +36,8 @@ namespace PoCEventHandler
                                 Log.Logger.Information($"{eventStoreEvent.Sequence} - Message - {charEvent?.Character}");
                                 break;
                         }
-                        currentPosition = eventStoreEvent.Sequence;
-                        watermarkService.UpdateWatermark(currentPosition);
+                        watermark.LastSequenceId = eventStoreEvent.Sequence;
+                        watermarkService.UpdateWatermark(watermark);
                     }
                 }
             }

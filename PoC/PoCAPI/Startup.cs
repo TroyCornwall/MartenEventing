@@ -39,16 +39,13 @@ namespace PoCAPI
                 options.UseSqlServer(Configuration.GetConnectionString("SqlDB"),
                     sqlOptions => sqlOptions.MigrationsAssembly("PoCAPI"));
             });
-
-            
             
             services.AddHangfire(configuration => configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
                 .UseMemoryStorage());
-
-            // Add the processing server as IHostedService
+            
             services.AddHangfireServer();
         }
 

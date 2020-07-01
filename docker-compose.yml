@@ -23,6 +23,7 @@ services:
     depends_on: 
       - postgres
       - sql
+      - poc_dbdeploy
   poc_event_raiser:
     build:
       context: ./

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Marten;
+using Microsoft.EntityFrameworkCore;
 using PoCCommon.Database;
 using PoCCommon.Database.Models;
 
@@ -14,28 +17,27 @@ namespace PoCEventHandler.Services
             _dbContext = dbContext;
         }
 
-        public long GetCurrentWatermark()
+        public Watermark GetCurrentWatermark()
         {
-            var watermark = _dbContext.Watermarks.FirstOrDefault();
-            if (watermark != null)
-                return watermark.LastSequenceId;
-            return 0;
+            //This uses no tracking so we can reset the watermark of a running application
+            var watermark = _dbContext.Watermarks.AsNoTracking().FirstOrDefault(x => x.Name == "PoCEventHandler");
+            if (watermark is null)
+            {
+                watermark = new Watermark()
+                {
+                    Id = Guid.NewGuid()
+                };
+                _dbContext.Add(watermark);
+                _dbContext.SaveChanges();
+            }
+            return watermark;
         }
 
-        public void UpdateWatermark(long lastSequenceId)
+        public bool UpdateWatermark(Watermark watermark)
         {
-            var watermark =  _dbContext.Watermarks.FirstOrDefault();
-            if (watermark != null)
-            {
-                watermark.LastSequenceId = lastSequenceId;
-            }
-            watermark = new Watermark()
-            {
-                Id = Guid.NewGuid(),
-                LastSequenceId = lastSequenceId
-            };
-            _dbContext.Watermarks.Add(watermark);
-            _dbContext.SaveChanges();
+            
+            _dbContext.Entry(_dbContext.Watermarks.FirstOrDefault(x => x.Name == "PoCEventHandler")).CurrentValues.SetValues(watermark);
+            return _dbContext.SaveChanges() > 0;
         }
     }
 }
