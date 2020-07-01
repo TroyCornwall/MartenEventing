@@ -12,10 +12,9 @@ PoCEventHandler handles these, which it logs out the sequence Id and the Charact
 
 PoCEventHandler always returns highest sequence id of the events its written for the message endpoint
 
-TODO: 
-* Add checking the PoCEventHandler has processed the heartbeat
-* Find out why heartbeats aren't being sent on the schedule
-* Add another API, Raiser, Handler to show you can have multiple readers and writers
-* Tests
+TODO:
 * Azure build
 * Deploy to k8s
+* Find out why heartbeats aren't being sent when run in docker
+* Add another API, Raiser, Handler to show you can have multiple readers and writers
+* Tests

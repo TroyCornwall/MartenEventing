@@ -54,7 +54,7 @@ namespace PoCAPI.Controllers
             var processingTime = endTime - startTime;
             
             
-            return Ok($"Took {processingTime} to run");
+            return Ok($"Took {processingTime.TotalMilliseconds}ms to run");
         }
     }
 }
