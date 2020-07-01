@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PoCAPI.Services;
+using PoCCommon.Services;
 using RestSharp;
 
 namespace PoCAPI.Controllers
@@ -13,11 +14,13 @@ namespace PoCAPI.Controllers
     {
         private readonly ILogger<MessageController> _logger;
         private readonly EventRaiser _eventRaiser;
+        private readonly WatermarkService _watermarkService;
 
-        public MessageController(ILogger<MessageController> logger, EventRaiser eventRaiser)
+        public MessageController(ILogger<MessageController> logger, EventRaiser eventRaiser, WatermarkService watermarkService)
         {
             _logger = logger;
             _eventRaiser = eventRaiser;
+            _watermarkService = watermarkService;
         }
 
         [HttpPost]
@@ -38,10 +41,15 @@ namespace PoCAPI.Controllers
 
             var startTime = DateTime.Now;
             _logger.LogInformation($"Got message {message}");
+            var watermark = _watermarkService.GetCurrentWatermark();
             var highestEventId = await _eventRaiser.AddMessage(message);
-           
-            //TODO: Wait until event id is written back into DB
-
+            
+            //wait until watermark has been written to the db
+            while (watermark.LastSequenceId < highestEventId)
+            {
+                watermark = _watermarkService.GetCurrentWatermark();
+            }
+            
             var endTime = DateTime.Now;
             var processingTime = endTime - startTime;
             

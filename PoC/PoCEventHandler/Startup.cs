@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PoCCommon.Database;
+using PoCCommon.Services;
 using PoCEventHandler.Services;
 using Serilog;
 using Serilog.Events;

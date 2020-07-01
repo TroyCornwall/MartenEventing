@@ -2,6 +2,7 @@
 using Common.Commands.Events;
 using Common.Commands.Events.PoC;
 using Microsoft.Extensions.DependencyInjection;
+using PoCCommon.Services;
 using PoCEventHandler.Services;
 using Serilog;
 

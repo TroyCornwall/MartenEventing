@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PoCAPI.Services;
 using PoCCommon.Database;
+using PoCCommon.Services;
 
 namespace PoCAPI
 {
@@ -32,7 +33,9 @@ namespace PoCAPI
         {
             services.AddControllers();
             services.Configure<EventRaiserOptions>(Configuration);
+            
             services.AddTransient<EventRaiser>();
+            services.AddTransient<WatermarkService>();
            
             services.AddDbContext<PocDbContext>(options =>
             {

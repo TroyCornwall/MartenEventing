@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
-using Marten;
 using Microsoft.EntityFrameworkCore;
 using PoCCommon.Database;
 using PoCCommon.Database.Models;
 
-namespace PoCEventHandler.Services
+namespace PoCCommon.Services
 {
     public class WatermarkService
     {
