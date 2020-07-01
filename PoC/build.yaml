@@ -15,16 +15,8 @@ pool:
 variables:
   projectName: 'poc'
   projectDir: 'PoC'
-  solution: '**/MartinPoC.sln'
 
 steps:
-- task: UseDotNet@2
-  displayName: Install .NET Core 3.1 SDK
-  inputs:
-    packageType: 'sdk'
-    version: '3.1.100'
-    installationPath: '$(Agent.ToolsDirectory)/dotnet'
-
 - task: Docker@2
   inputs:
     containerRegistry: 'Azure Ospri Registry Dev'
@@ -72,20 +64,8 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    Contents: '**/$(projectDir)/deployment.yaml'
+    Contents: '$(Build.Repository.LocalPath)/PoC/pocdeploy.yaml'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-# - task: CopyFiles@2
-#   inputs:
-#     Contents: '**/$(projectDir)/AutomatedTests/**'
-#     TargetFolder: '$(Build.ArtifactStagingDirectory)'
-#   displayName: Get Functional Test Scripts
-
-# - task: CopyFiles@2
-#   inputs:
-#     Contents: '**/$(projectDir)/*.json'
-#     TargetFolder: '$(Build.ArtifactStagingDirectory)'
-#   displayName: Copy Swagger Files
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop' 
