@@ -5,7 +5,7 @@
  data:
    ConnectionStrings__Marten: #{POSTGRES_CONNECTION_STRING}#
    ConnectionStrings__SqlDB: #{SQL_CONNECTION_STRING}#
-   EventRaiserUrl: #{EVENT_RAISER_URL}#
+   EventRaiserUrl: http://martenpoc-raiser-#{Environment}#
 ---
 apiVersion: batch/v1
 kind: Job
