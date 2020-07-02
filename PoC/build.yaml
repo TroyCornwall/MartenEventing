@@ -1,0 +1,71 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+resources:
+- repo: self
+
+trigger:
+- '*'
+
+pool:
+  vmImage: 'ubuntu-16.04'
+
+variables:
+  projectName: 'poc'
+  projectDir: 'PoC'
+
+steps:
+- task: Docker@2
+  inputs:
+    containerRegistry: 'Azure Ospri Registry Dev'
+    command: 'login'
+
+- task: Docker@2
+  displayName: Build and push API image
+  inputs:
+    containerRegistry: 'Azure Ospri Registry Dev'
+    repository: 'martenpoc-api'
+    command: 'buildAndPush'
+    Dockerfile: '**/PoC/Dockerfile-api'
+    buildContext: '$(Build.Repository.LocalPath)'
+    tags: '$(Build.BuildNumber)'
+
+- task: Docker@2
+  displayName: Build and push API image
+  inputs:
+    containerRegistry: 'Azure Ospri Registry Dev'
+    repository: 'martenpoc-handler'
+    command: 'buildAndPush'
+    Dockerfile: '**/PoC/Dockerfile-handler'
+    buildContext: '$(Build.Repository.LocalPath)'
+    tags: '$(Build.BuildNumber)'
+
+- task: Docker@2
+  displayName: Build and push API image
+  inputs:
+    containerRegistry: 'Azure Ospri Registry Dev'
+    repository: 'martenpoc-raiser'
+    command: 'buildAndPush'
+    Dockerfile: '**/PoC/Dockerfile-raiser'
+    buildContext: '$(Build.Repository.LocalPath)'
+    tags: '$(Build.BuildNumber)'
+
+- task: Docker@2
+  displayName: Build and push API image
+  inputs:
+    containerRegistry: 'Azure Ospri Registry Dev'
+    repository: 'martenpoc-db'
+    command: 'buildAndPush'
+    Dockerfile: '**/PoC/Dockerfile-db'
+    buildContext: '$(Build.Repository.LocalPath)'
+    tags: '$(Build.BuildNumber)'
+
+- task: CopyFiles@2
+  inputs:
+    Contents: '$(Build.Repository.LocalPath)/PoC/pocdeploy.yaml'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop' 
