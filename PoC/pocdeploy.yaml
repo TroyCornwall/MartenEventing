@@ -60,7 +60,7 @@ spec:
           - containerPort: 80
           envFrom:
           - configMapRef:
-              name: martenpoc-api-#{Environment}#
+              name: poc-config-#{Environment}#
           resources:
             requests:
               memory: "#{Resources.Requests.Memory}#"
@@ -112,7 +112,7 @@ spec:
           - containerPort: 80
           envFrom:
           - configMapRef:
-              name: martenpoc-raiser-#{Environment}#
+              name: poc-config-#{Environment}#
           resources:
             requests:
               memory: "#{Resources.Requests.Memory}#"
@@ -162,7 +162,7 @@ spec:
           image: ospriregistry.azurecr.io/martenpoc-handler:$(Build.BuildNumber)
           envFrom:
           - configMapRef:
-              name: martenpoc-handler-#{Environment}#
+              name: poc-config-#{Environment}#
           resources:
             requests:
               memory: "#{Resources.Requests.Memory}#"
